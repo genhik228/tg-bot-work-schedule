@@ -11,8 +11,8 @@
 ## 🛠 Установка
 1. Склонируйте репозиторий:
 ```bash
-git clone https://github.com/ваш-репозиторий.git
-cd ваш-репозиторий
+git clone https://github.com/tg-bot-work-schedule.git
+cd tg-bot-work-schedule
 ```
 2. Установите зависимости:
 ```bash
