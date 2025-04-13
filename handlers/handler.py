@@ -11,24 +11,26 @@ from main import bot
 import keyboards.keyboard as kb
 import datetime
 
-
 router = Router()
+
 
 class Register(StatesGroup):
     send = State()
     delete = State()
 
+
 def new_user(uid):
     with open("users.txt", "a") as f:
         f.write(str(uid) + "\n")
+
 
 def get_russian_weekday(date):
     days = ['Понедельник', 'Вторник', 'Среда',
             'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
     return days[date.weekday()]
 
-async def create_sheduler(s):
 
+async def create_sheduler(s):
     schedule = s.split('\n')
     week_type = s.split('\n')[-1]
     today = datetime.date.today()
@@ -52,14 +54,15 @@ async def create_sheduler(s):
 
     # Выводим результат
     result_s = "\n" + f"✨ РАСПИСАНИЕ НА НЕДЕЛЮ ✨" + "\n"
-    result_s += "═══════════"  + "\n\n"
+    result_s += "═══════════" + "\n\n"
     result_s += "\n\n".join(result)
     result_s += "\n\n" + "✅ Готово! Хорошей недели! 😊" + "\n"
     async with aiofiles.open('rasp.txt', 'w', encoding='utf-8') as file:
         await file.write(result_s)
     return result_s
 
-@router.message(Command("schedule")) # F.text
+
+@router.message(Command("schedule"))  # F.text
 async def message_with_text(message: Message):
     print(message.chat.id, message.from_user.id, 'schedule')
     if message.chat.id in GROUP_IDS:
@@ -72,7 +75,8 @@ async def message_with_text(message: Message):
         except Exception as e:
             await message.answer(f"Ошибка: {str(e)}", reply_markup=await kb.user_keyboard())
 
-@router.message(Command("end")) # F.text
+
+@router.message(Command("end"))  # F.text
 async def update(message: Message):
     if message.chat.id in GROUP_IDS:
         param = message.text.split()
@@ -84,15 +88,21 @@ async def update(message: Message):
                 future = datetime.date(date_l[2], date_l[1], date_l[0])
                 diff = int((future - today).days)
                 if diff > 0:
-                    await message.answer('До конца работы осталось' + str(diff) + ' дней.', reply_markup=await kb.user_keyboard())
+                    await message.answer('До конца работы осталось' + str(diff) + ' дней.',
+                                         reply_markup=await kb.user_keyboard())
                 else:
-                    await bot.send_photo(message.chat.id, caption='Уже прошло ' + str(abs(diff)) + ' дней с окончания работы.\nТеперь добби свободен.', photo=FSInputFile(r"data//dobbi.png"), reply_markup=await kb.user_keyboard())
+                    await bot.send_photo(message.chat.id, caption='Уже прошло ' + str(
+                        abs(diff)) + ' дней с окончания работы.\nТеперь добби свободен.',
+                                         photo=FSInputFile(r"data//dobbi.png"), reply_markup=await kb.user_keyboard())
             else:
-                await message.answer('Неверный формат, я не понимаю.\nПример: /end 01.01.2019', reply_markup=await kb.user_keyboard())
+                await message.answer('Неверный формат, я не понимаю.\nПример: /end 01.01.2019',
+                                     reply_markup=await kb.user_keyboard())
         else:
-            await message.answer('Неверный формат, я не понимаю.\nПример: /end 01.01.2019', reply_markup=await kb.user_keyboard())
+            await message.answer('Неверный формат, я не понимаю.\nПример: /end 01.01.2019',
+                                 reply_markup=await kb.user_keyboard())
 
-@router.message(Command("start")) # F.text
+
+@router.message(Command("start"))  # F.text
 async def message_with_text(message: Message):
     print(message.from_user.id, message.chat.id, message.text)
     new_user(message.from_user.id)
@@ -104,6 +114,7 @@ async def message_with_text(message: Message):
                                  reply_markup=await kb.user_keyboard())
     else:
         await message.answer('Вход рубль, выход два')
+
 
 @router.callback_query()
 async def handle_callback_query(callback: CallbackQuery, state: FSMContext):
@@ -150,6 +161,7 @@ async def handle_callback_query(callback: CallbackQuery, state: FSMContext):
             await callback.message.answer("Введите id:", reply_markup=await kb.back_keyboard())
             await state.set_state(Register.delete)
 
+
 @router.message(Register.send)
 async def auth_phone(message: Message, state: FSMContext):
     sheduler = await create_sheduler(message.text)
@@ -166,15 +178,17 @@ async def auth_phone(message: Message, state: FSMContext):
     await bot.delete_message(chat_id=GROUP_IDS[0], message_id=message.text)
     await message.answer('Сообщение удалено', reply_markup=await kb.start_keyboard())
     await state.clear()
+
+
 # 592538405,
 
-@router.message(Command("help")) # F.text
+@router.message(Command("help"))  # F.text
 async def message_with_text(message: Message):
     if message.chat.id in GROUP_IDS:
 
         mes = """
         🤖 <b>Доступные команды бота</b> 🤖
-        
+
         1. <b>/help</b> 🆘  
            <i>Показать список всех команд</i>  
            ➤ Пример: <code>/help</code>

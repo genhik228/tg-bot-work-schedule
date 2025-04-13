@@ -3,13 +3,13 @@ from aiogram import Bot, Dispatcher
 import logging
 
 from config import TOKEN
-from handlers import handlers
+from handlers import handler
 
 bot = Bot(TOKEN)
 
 async def main():
     dp = Dispatcher()
-    dp.include_routers(handlers.router)
+    dp.include_routers(handler.router)
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
